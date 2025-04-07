@@ -1,0 +1,11 @@
+RewriteEngine On
+RewriteBase /font-group-system-backend/
+
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(.*)$ route/route.php [QSA,L]
+
+# Allow CORS for font files (ttf, woff, woff2, otf)
+<FilesMatch "\.(ttf|woff|woff2|otf)$">
+    Header set Access-Control-Allow-Origin "*"
+</FilesMatch>
