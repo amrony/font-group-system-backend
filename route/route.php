@@ -12,10 +12,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 }
 
 require_once '../controller/FontController.php';
+require_once '../controller/GroupController.php';
 
 $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 $method = $_SERVER['REQUEST_METHOD'];
 $controller = new FontController();
+$groupController = new GroupController();
 
 // Handle font upload
 if ($uri === '/font-group-system-backend/upload-font' && $method === 'POST') {
@@ -39,6 +41,33 @@ if ($uri === '/font-group-system-backend/delete-font' && $method === 'POST') {
         echo json_encode(['status' => 'error', 'message' => 'font_id is required']);
     }
 }
+
+// Handle font Groupt create
+if ($uri === '/font-group-system-backend/create-font-group' && $method === 'POST') {
+    $data = json_decode(file_get_contents("php://input"), true);
+
+    if (isset($data['group_title']) && isset($data['fonts'])) {
+        echo $groupController->createFontGroup($data);
+    } else {
+        echo json_encode(['status' => 'error', 'message' => 'Invalid input data']);
+    }
+}
+
+// get-font-groups
+if ($uri === '/font-group-system-backend/get-font-groups' && $method === 'GET') {
+    echo $groupController->getFontGroups();
+}
+
+if ($uri === '/font-group-system-backend/delete-font-group' && $method === 'POST') {
+    $data = json_decode(file_get_contents("php://input"), true);
+    
+    if (isset($data['font_group_id'])) {
+        echo $groupController->deleteFontGroup($data['font_group_id']);
+    } else {
+        echo json_encode(['status' => 'error', 'message' => 'font_group_id is required']);
+    }
+}
+
 
 
 if (strpos($uri, '/font-group-system-backend/uploads/') === 0) {

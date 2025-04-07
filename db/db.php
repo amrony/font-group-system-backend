@@ -6,7 +6,7 @@ class Database {
     private $dbname = 'font_db';
     private $username = 'root';
     private $password = '';
-    private $conn;
+    public $conn;
 
     public function __construct() {
         try {
