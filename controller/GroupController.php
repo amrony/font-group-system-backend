@@ -57,14 +57,6 @@
             $groupId = $data['group_id'];
             $groupTitle = $data['group_title'];
             $newFonts = $data['fonts'];
-
-            
-          
-        
-            // Validate input
-            // if (!$groupId || !$groupTitle) {
-            //     return json_encode(['status' => 'error', 'message' => 'Missing required fields']);
-            // }
         
             try {
                 // Update group title
@@ -87,18 +79,9 @@
                 foreach ($fontsToRemove as $fontId) {
                     $this->groupFont->detachFont($fontId);
                 }
-
-
-                // echo json_encode(['newFonts' => $newFonts]);
-                // die();
-
         
                 foreach ($newFonts as $font) {
                     if (in_array($font['id'], $fontsToAdd)) {
-
-                        // echo json_encode(['if_font' => $font]);
-                        // die();
-
                         $this->groupFont->attachFont(
                             $groupId,
                             $font['name'],
@@ -106,10 +89,6 @@
                         );
                     } 
                     else {
-
-                        // echo json_encode(['else_font' => $font]);
-                        // die();
-
                         // Update existing fonts that weren't removed
                         $this->groupFont->updateFont(
                             $font['id'],
