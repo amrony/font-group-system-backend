@@ -46,5 +46,88 @@
 
             return json_encode(['status' => 'success', 'message' => 'Font group deleted successfully']);
         }
+
+        public function getFontGroupById($font_group_id) {
+            $groupFont = $this->groupFont->getFontGroupById($font_group_id);
+
+            return json_encode(['status' => 'success', 'data' => $groupFont]);
+        }
+
+
+        public function updateFontGroup($data) {
+            $groupId = $data['group_id'];
+            $groupTitle = $data['group_title'];
+            $newFonts = $data['fonts'];
+
+            
+          
+        
+            // Validate input
+            // if (!$groupId || !$groupTitle) {
+            //     return json_encode(['status' => 'error', 'message' => 'Missing required fields']);
+            // }
+        
+            try {
+                // Update group title
+                $this->groupFont->updateGroupTitle($groupId, $groupTitle);
+
+                // Get current fonts for this group
+                $currentFonts = $this->groupFont->getGroupFonts($groupId);
+
+                // Convert to array of font IDs (or unique identifiers)
+                $currentFontIds = array_column($currentFonts, 'id');
+
+                $newFontIds = array_column($newFonts, 'id');
+
+                // Determine fonts to add and remove
+                $fontsToAdd = array_diff($newFontIds, $currentFontIds);
+                $fontsToRemove = array_diff($currentFontIds, $newFontIds);
+
+        
+                // attach/detach operations
+                foreach ($fontsToRemove as $fontId) {
+                    $this->groupFont->detachFont($fontId);
+                }
+
+
+                // echo json_encode(['newFonts' => $newFonts]);
+                // die();
+
+        
+                foreach ($newFonts as $font) {
+                    if (in_array($font['id'], $fontsToAdd)) {
+
+                        // echo json_encode(['if_font' => $font]);
+                        // die();
+
+                        $this->groupFont->attachFont(
+                            $groupId,
+                            $font['name'],
+                            $font['font_id'],
+                            $font['size']
+                        );
+                    } 
+                    else {
+
+                        // echo json_encode(['else_font' => $font]);
+                        // die();
+
+                        // Update existing fonts that weren't removed
+                        $this->groupFont->updateFont(
+                            $font['id'],
+                            $font['name'],
+                            $font['size']  , 
+                            $font['font_id']
+                        );
+                    }
+                }
+        
+                return json_encode(['status' => 'success', 'message' => 'Font group updated successfully']);
+        
+            } catch (Exception $e) {
+                return json_encode(['status' => 'error', 'message' => 'Failed to update font group: ' . $e->getMessage()]);
+            }
+        }
+
     }
 ?>

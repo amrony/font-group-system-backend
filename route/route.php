@@ -68,6 +68,28 @@ if ($uri === '/font-group-system-backend/delete-font-group' && $method === 'POST
     }
 }
 
+if ($uri === '/font-group-system-backend/get-font-group-by-id' && $method === 'GET') {
+    $data = $_GET; 
+    
+    if (isset($data['font_group_id'])) {
+        echo $groupController->getFontGroupById($data['font_group_id']);
+    } else {
+        echo json_encode(['status' => 'error', 'message' => 'font_group_id is required']);
+    }
+}
+
+// update-font-group
+
+if ($uri === '/font-group-system-backend/update-font-group' && $method === 'POST') {
+    $data = json_decode(file_get_contents("php://input"), true);
+
+    if (isset($data['group_id']) && isset($data['group_title']) && isset($data['fonts'])) {
+        echo $groupController->updateFontGroup($data);
+    } else {
+        echo json_encode(['status' => 'error', 'message' => 'Invalid input data']);
+    }
+}
+
 
 
 if (strpos($uri, '/font-group-system-backend/uploads/') === 0) {
