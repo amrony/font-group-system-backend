@@ -12,7 +12,7 @@
             $stmt = $this->db->conn->prepare("INSERT INTO font_groups (group_title) VALUES (?)");
             $stmt->execute([$group_title]);
 
-            $lastId = $this->db->conn->lastInsertId(); // ✅ return new group ID
+            $lastId = $this->db->conn->lastInsertId(); 
             $stmt = null;
             return $lastId;
         }
@@ -72,24 +72,18 @@
 
 
         public function deleteFontGroup($font_group_id) {
-            // Start transaction to ensure data consistency
             $this->db->conn->beginTransaction();
             
             try {
-                // Delete fonts associated with the font group
                 $stmt = $this->db->conn->prepare("DELETE FROM group_fonts WHERE font_group_id = ?");
                 $stmt->execute([$font_group_id]);
         
-                // Then delete the font group itself
                 $stmt = $this->db->conn->prepare("DELETE FROM font_groups WHERE id = ?");
                 $stmt->execute([$font_group_id]);
-        
-                // Commit transaction if both deletes succeed
                 $this->db->conn->commit();
         
                 return json_encode(['status' => 'success', 'message' => 'Font group deleted successfully']);
             } catch (Exception $e) {
-                // Rollback the transaction if an error occurs
                 $this->db->conn->rollBack();
                 return json_encode(['status' => 'error', 'message' => 'Failed to delete font group: ' . $e->getMessage()]);
             }
@@ -113,8 +107,6 @@
             $row = $stmt->fetchAll(PDO::FETCH_ASSOC);
             $stmt = null;
 
-            // echo json_encode(['row']);
-            // die();
         
             if ($row) {
                 // Format data into grouped structure
@@ -128,8 +120,7 @@
                     $group['fonts'][] = [
                         'id' => $font['group_font_id'],
                         'name' => $font['group_font_name'],
-                        'font_id' => $font['font_id'],
-                        // 'font_name' => $font['font_name']
+                        'font_id' => $font['font_id']
                     ];
                 }
         
@@ -139,9 +130,6 @@
             }
         }
 
-
-        // ------------------------------
-
             
         public function updateGroupTitle($groupId, $title) {
             $stmt = $this->db->prepare("UPDATE font_groups SET group_title = ? WHERE id = ?");
@@ -149,11 +137,6 @@
         }
 
         public function getGroupFonts($groupId) {
-
-            
-            // echo json_encode(['groupId' => $groupId]);
-            // die();
-
             $stmt = $this->db->prepare("SELECT * FROM group_fonts WHERE font_group_id = ?");
             $stmt->execute([$groupId]);
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -161,10 +144,6 @@
         
         
         public function detachFont($fontId) {
-
-            // echo json_encode(['fontId' => $fontId]);
-            // die();
-
             $stmt = $this->db->prepare("DELETE FROM group_fonts WHERE id = ?");
             return $stmt->execute([$fontId]);
         }
@@ -176,14 +155,8 @@
         }
         
         public function updateFont($id, $name, $fontId) {
-
-            // echo json_encode(['id' => $id, 'fontId' => $fontId, 'name' => $name]);
-            // die();
-
             $stmt = $this->db->prepare("UPDATE group_fonts SET name = ?, font_id = ? WHERE id = ?");
             return $stmt->execute([$name, $fontId, $id]);
         }
-
-    
     }
 ?>
