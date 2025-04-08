@@ -23,9 +23,8 @@
             foreach ($fonts as $font) {
                 $font_id = $font['font_id'];
                 $name = $font['name'];
-                $size = $font['size'];
 
-                $success = $this->groupFont->addFontToGroup($group_id, $font_id, $name, $size);
+                $success = $this->groupFont->addFontToGroup($group_id, $font_id, $name);
                 if (!$success) {
                     return json_encode(['status' => 'error', 'message' => 'Failed to add font to group']);
                 }
@@ -103,8 +102,7 @@
                         $this->groupFont->attachFont(
                             $groupId,
                             $font['name'],
-                            $font['font_id'],
-                            $font['size']
+                            $font['font_id']
                         );
                     } 
                     else {
@@ -116,7 +114,6 @@
                         $this->groupFont->updateFont(
                             $font['id'],
                             $font['name'],
-                            $font['size']  , 
                             $font['font_id']
                         );
                     }

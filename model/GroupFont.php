@@ -17,9 +17,9 @@
             return $lastId;
         }
 
-        public function addFontToGroup($font_group_id, $font_id, $name, $size) {
-            $stmt = $this->db->conn->prepare("INSERT INTO group_fonts (font_group_id, font_id, name, size) VALUES (?, ?, ?, ?)");
-            $success = $stmt->execute([$font_group_id, $font_id, $name, $size]);
+        public function addFontToGroup($font_group_id, $font_id, $name) {
+            $stmt = $this->db->conn->prepare("INSERT INTO group_fonts (font_group_id, font_id, name) VALUES (?, ?, ?)");
+            $success = $stmt->execute([$font_group_id, $font_id, $name]);
 
             $stmt = null;
             return $success;
@@ -33,7 +33,6 @@
                     fg.group_title,
                     gf.font_id,
                     gf.name AS font_name,
-                    gf.size,
                     f.font_name
                 FROM font_groups fg
                 LEFT JOIN group_fonts gf ON fg.id = gf.font_group_id
@@ -63,7 +62,6 @@
                     $groups[$group_id]['fonts'][] = [
                         'font_id' => $row['font_id'],
                         'name' => $row['font_name'],
-                        'size' => $row['size'],
                         'font_name' => $row['font_name']
                     ];
                 }
@@ -105,7 +103,6 @@
                     gf.font_id,
                     gf.id as group_font_id,
                     gf.name AS group_font_name,
-                    gf.size,
                     f.font_name
                 FROM font_groups fg
                 LEFT JOIN group_fonts gf ON fg.id = gf.font_group_id
@@ -131,7 +128,6 @@
                     $group['fonts'][] = [
                         'id' => $font['group_font_id'],
                         'name' => $font['group_font_name'],
-                        'size' => $font['size'],
                         'font_id' => $font['font_id'],
                         // 'font_name' => $font['font_name']
                     ];
@@ -174,18 +170,18 @@
         }
 
         
-        public function attachFont($groupId, $name, $selectedFont, $size) {
-            $stmt = $this->db->prepare("INSERT INTO group_fonts (font_group_id, name, font_id, size) VALUES (?, ?, ?, ?)");
-            return $stmt->execute([$groupId, $name, $selectedFont, $size]);
+        public function attachFont($groupId, $name, $selectedFont) {
+            $stmt = $this->db->prepare("INSERT INTO group_fonts (font_group_id, name, font_id) VALUES (?, ?, ?)");
+            return $stmt->execute([$groupId, $name, $selectedFont]);
         }
         
-        public function updateFont($id, $name, $size, $fontId) {
+        public function updateFont($id, $name, $fontId) {
 
-            // echo json_encode(['id' => $id, 'fontId' => $fontId, 'name' => $name, 'size' => $size]);
+            // echo json_encode(['id' => $id, 'fontId' => $fontId, 'name' => $name]);
             // die();
 
-            $stmt = $this->db->prepare("UPDATE group_fonts SET name = ?, font_id = ?, size = ? WHERE id = ?");
-            return $stmt->execute([$name, $fontId, $size, $id]);
+            $stmt = $this->db->prepare("UPDATE group_fonts SET name = ?, font_id = ? WHERE id = ?");
+            return $stmt->execute([$name, $fontId, $id]);
         }
 
     
